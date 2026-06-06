@@ -1,5 +1,6 @@
 'use client'
 import { setReactDebugChannelForHtmlRequest } from 'next/dist/server/dev/debug-channel'
+import { Saira_Extra_Condensed } from 'next/font/google'
 //import Image from "next/image";
 import { useState, useRef, useEffect } from 'react'
 
@@ -12,8 +13,10 @@ export default function Home() {
   const [time, setTime] = useState(0)
   const [start, setStart] = useState(false)
   const [run, setRun] = useState(false)
+  const [lap, setLap] = useState([])
   const intervalRef = useRef(null)
   const startTimeRef = useRef(0)
+  const id = useRef(0)
 
   useEffect (() => {
     setHour(Math.floor(time / 3600000))
@@ -35,8 +38,17 @@ export default function Home() {
     clearInterval(intervalRef.current)
     setRun(false)
   }
-
-
+  const reset = () => {
+    clearInterval(intervalRef.current)
+    setRun(false)
+    setTime(0)
+    setLap(lap => [])
+    id.current = 0
+  }
+  const laps = () => {
+    setLap(lap => [...lap, {id: id.current, hours:hours, minutes:minutes, seconds:sec, ms:mili}])
+    id.current++
+  }
   function handleClick (){ 
     setCount(count + 1)
   }
@@ -45,20 +57,36 @@ export default function Home() {
 
   return (
     <div>
-      <h1>hello</h1>
-      <button onClick={handleClick}>
-        clicked {count} times
-      </button>
       <div>
-        <h1>{hours.toString().padStart(2, '0')} : {minutes.toString().padStart(2, '0')} : {sec.toString().padStart(2, '0')} : {mili.toString().padStart(3, '0')} </h1>
-        <button className="start" onClick={Startwatch}>
-          Start Button
-        </button>
-        <br></br>
-        <button onClick={pause}>
-          Pause Button
-        </button>
-      </div>
+          <h1>{hours.toString().padStart(2, '0')} : {minutes.toString().padStart(2, '0')} : {sec.toString().padStart(2, '0')} : {mili.toString().padStart(3, '0')} </h1>
+        { run ?
+        <div>
+          <button onClick={laps}>
+            Lap
+          </button>
+          <br></br>
+          <button onClick={pause}>
+            Pause Button
+          </button>
+        </div>
+          :
+          <div>
+            <button className="start" onClick={Startwatch}>
+              Start Button
+            </button>
+            <br></br>
+          <button onClick={reset}>
+            Reset
+          </button>
+          </div>
+        }
+        {lap.map((l) => 
+        <div key={l.id}>
+          <h1>{l.id}. {l.hours.toString().padStart(2, '0')} : {l.minutes.toString().padStart(2, '0')} : {l.seconds.toString().padStart(2, '0')} : {l.ms.toString().padStart(3, '0')} </h1>
+        </div>
+
+        )}
     </div>
+  </div>
   );
 }
