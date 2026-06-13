@@ -1,4 +1,5 @@
 'use client'
+import { setMaxIdleHTTPParsers } from 'http'
 import { setReactDebugChannelForHtmlRequest } from 'next/dist/server/dev/debug-channel'
 import { Saira_Extra_Condensed } from 'next/font/google'
 //import Image from "next/image";
@@ -49,6 +50,9 @@ export default function Home() {
     setLap(lap => [...lap, {id: id.current, hours:hours, minutes:minutes, seconds:sec, ms:mili}])
     id.current++
   }
+  const deleteLap = (key) => {
+    setLap(lap.filter((l) => l.id !== key))
+  }
   function handleClick (){ 
     setCount(count + 1)
   }
@@ -83,6 +87,7 @@ export default function Home() {
         {lap.map((l) => 
         <div key={l.id}>
           <h1>{l.id}. {l.hours.toString().padStart(2, '0')} : {l.minutes.toString().padStart(2, '0')} : {l.seconds.toString().padStart(2, '0')} : {l.ms.toString().padStart(3, '0')} </h1>
+          <button onClick={() => deleteLap(l.id)}>Delete</button>
         </div>
 
         )}
